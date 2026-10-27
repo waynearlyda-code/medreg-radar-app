@@ -214,9 +214,10 @@ footer p{margin:4px 0}
   .top nav{display:none}
 }
 @media (max-width:520px){
-  .stats{grid-template-columns:1fr}
-  .stat{border-right:0;border-bottom:1px solid var(--line)}
-  .stat:last-child{border-bottom:0}
+  .stat{padding:10px 10px}
+  .stat .v{font-size:24px;margin-top:6px}
+  .stat .k{font-size:10px;letter-spacing:.04em}
+  .stat .d{font-size:11px}
 }
 @media (prefers-reduced-motion:reduce){
   .radar .sweep,.radar .blip.ping circle.halo{animation:none}
@@ -236,6 +237,18 @@ footer p{margin:4px 0}
 }
 .drawer:not(.open){visibility:hidden;transition:transform .25s ease,visibility 0s .25s}
 
+/* 导出面板 */
+.export{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:8px;padding:12px 14px;margin:0 0 14px}
+.ex-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.ex-row+.ex-row{margin-top:10px}
+.ex-scope{margin-left:auto;font:12px var(--mono);color:var(--ink-2);letter-spacing:.04em}
+.ex-task{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-2);flex:1 1 260px}
+.ex-task select{flex:1;min-width:0;border:1px solid var(--line-2);background:var(--surface);color:var(--ink);border-radius:6px;padding:6px 8px;font:13px var(--sans)}
+.ex-hint{margin:10px 0 0;font-size:12.5px;color:var(--ink-3)}
+.ex-msg{display:block;color:var(--accent-ink);font-weight:600;margin-top:4px}
+.ex-msg:empty{display:none}
+@media (max-width:520px){.ex-scope{margin-left:0;width:100%}.export .btn{flex:1 1 auto;justify-content:center}}
+
 /* ====== App 布局：手机底部标签栏，电脑左侧栏 ====== */
 html,body{height:100%}
 body{padding-bottom:calc(64px + env(safe-area-inset-bottom));background-attachment:fixed}
@@ -247,7 +260,7 @@ body{padding-bottom:calc(64px + env(safe-area-inset-bottom));background-attachme
 .view.on{display:block}
 .view>h2{font-size:22px;margin:4px 0 4px}
 .view>.sub{color:var(--ink-3);font-size:13px;margin:0 0 14px}
-.tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;display:grid;grid-template-columns:repeat(5,1fr);
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;display:grid;grid-template-columns:repeat(4,1fr);
   background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
 .tabs button{border:0;background:none;color:var(--ink-3);padding:8px 0 7px;font:11px/1.2 var(--sans);display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
 .tabs button svg{width:22px;height:22px}

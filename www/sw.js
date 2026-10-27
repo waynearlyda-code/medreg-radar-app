@@ -1,5 +1,5 @@
 /* 离线缓存：App 外壳先用缓存（秒开），数据走网络、失败再用缓存。改了外壳文件记得把 VERSION 加一。 */
-var VERSION = "mr-app-v1";
+var VERSION = "mr-app-v2";
 var SHELL = ["./", "./index.html", "./app.css", "./app.js", "./config.js", "./data/snapshot.js", "./manifest.webmanifest",
   "./icons/icon-192.png", "./icons/icon-512.png", "./icons/apple-touch-icon.png"];
 self.addEventListener("install", function (e) {

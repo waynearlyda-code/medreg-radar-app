@@ -42,6 +42,17 @@
       <input class="search" id="f-q" type="search" placeholder="搜索标题、摘要、文号" aria-label="搜索">
       <span class="count" id="count"></span>
     </div>
+    <div class="export" id="export">
+      <div class="ex-row"><span class="tag">EXPORT · 导出给你的 AI</span><span class="ex-scope" id="ex-scope"></span></div>
+      <div class="ex-row">
+        <label class="ex-task">想让 AI 做什么<select id="ex-task" aria-label="导出用途"></select></label>
+        <button class="btn primary" id="ex-copy" type="button">复制给 AI</button>
+        <button class="btn" id="ex-share" type="button">分享到 App</button>
+        <button class="btn" id="ex-md" type="button">下载 .md</button>
+        <button class="btn" id="ex-csv" type="button">下载 .csv（Excel）</button>
+      </div>
+      <p class="ex-hint">导出的是上面筛选出来的内容。复制后打开豆包、DeepSeek、Kimi 等聊天 App 粘贴发送；也可以下载文件上传给它，或交给你自己的智能体。<span id="ex-msg" class="ex-msg" role="status"></span></p>
+    </div>
     <div class="feed" id="feed"></div>
   <div class="more"><button class="btn" id="more" hidden>显示更多</button></div>
 </section>
@@ -113,32 +124,14 @@
   <div class="arch-h">月报 · MONTHLY</div><div class="arch" id="arch-monthly"></div>
 </section>
 
-<section class="view" id="v-ai">
-  <h2>问 AI</h2><p class="sub">只根据收录的文件回答，并标出出处。第一次使用需要填你自己的 key（见“指南”第 05 条）。</p>
-  <aside class="drawer" id="drawer" aria-hidden="true" aria-label="AI 问答">
-  <div class="dh"><b>问 AI</b><span class="tag">{{AI_PROVIDER}}</span><span class="sp"></span><button class="iconbtn" id="close-ai" aria-label="关闭">✕</button></div>
-  <div class="body">
-    <p class="note" style="margin-top:0">AI 只根据本站收录的文件回答，并标出出处编号。资料里没有的，它会说没有。</p>
-    <div class="presets" id="presets">
-      <button>整理本月和影像设备相关的文件</button>
-      <button>最近有哪些注册审评方面的新规定？</button>
-      <button>最近的文件对医院设备科工程师有什么影响？</button>
-      <button>医用设备集中采购最近有什么新要求？</button>
-    </div>
-    <div id="chat"></div>
-  </div>
-  <form id="askform"><textarea id="ask" placeholder="输入问题，回车发送（Shift+回车换行）" aria-label="问题"></textarea><button class="btn primary" id="send" type="submit">发送</button></form>
-  <div class="keybar"><span id="keystate"></span><span class="sp" style="flex:1"></span><button id="key-change" type="button">换一个</button><button id="key-clear" type="button">清除 key</button></div>
-</aside>
-</section>
 
 <section class="view guide" id="v-guide">
   <h2>指南</h2><p class="sub">安装、使用、数据来源，一页看懂</p>
   
 <details open><summary><span class="n">01</span>这个 App 是做什么的</summary><div class="gbody">
-<p>医疗器械的法规和政策更新得快，文件分散在政府网、药监局等多个网站上。MedReg Radar 把它们收拢到一处，按 <b>影像设备 / 医疗器械 / 背景</b> 分级，配上 AI 解读和问答。每条都附官方原文链接。</p>
-<ul><li><b>动态</b>：最新文件列表，可按时间、分级、关键词筛选。</li><li><b>雷达</b>：每个点是一份新文件，越靠中心越和影像设备相关。</li>
-<li><b>数据</b>：历年趋势、每月注册数等图表，每张都能切换成表格。</li><li><b>问 AI</b>：针对收录的文件提问，回答标注出处。</li></ul></div></details>
+<p>医疗器械的法规和政策更新得快，文件分散在政府网、药监局等多个网站上。MedReg Radar 把它们收拢到一处，按 <b>影像设备 / 医疗器械 / 背景</b> 分级，配上图表，并能一键导出给你常用的 AI。每条都附官方原文链接。</p>
+<ul><li><b>动态</b>：最新文件列表，可按时间、分级、关键词筛选，并一键导出给你的 AI。</li><li><b>雷达</b>：每个点是一份新文件，越靠中心越和影像设备相关。</li>
+<li><b>数据</b>：历年趋势、每月注册数等图表，每张都能切换成表格。</li></ul></div></details>
 
 <details><summary><span class="n">02</span>装到手机桌面</summary><div class="gbody">
 <p><b>iPhone / iPad</b>（要用 Safari 打开）</p>
@@ -157,12 +150,14 @@
 <ol><li>用 Chrome 或 Edge 打开本页。</li><li>地址栏最右边有一个“安装”小图标（电脑加向下箭头），点它，再点“安装”。</li><li>之后可以像普通软件一样从桌面或启动台打开。</li></ol>
 <button class="btn primary install-btn" hidden>一键安装到本机</button></div></details>
 
-<details><summary><span class="n">05</span>使用“问 AI”：申请自己的 key</summary><div class="gbody">
-<p>问答用的是 DeepSeek 大模型，按用量从你自己的账户扣费，单次问答用量很小。</p>
-<ol><li>打开 <a href="https://platform.deepseek.com" target="_blank" rel="noopener">platform.deepseek.com</a>，注册并登录。</li>
-<li>左侧点“充值”，少量充值即可。</li><li>左侧点“API keys” → “创建 API key”，复制以 <code>sk-</code> 开头的那串字符。</li>
-<li>回到 App，点“问 AI”，粘贴并保存。</li></ol>
-<p><b>安全说明</b>：key 只保存在你这台设备上，直接发给 DeepSeek，不经过任何其他服务器。换手机或清除浏览器数据后需要重新填写。建议在 DeepSeek 后台设置消费上限；在公用设备上用完点“清除 key”。</p></div></details>
+<details><summary><span class="n">05</span>把数据交给你的 AI 分析</summary><div class="gbody">
+<p>本 App 不内置 AI，也不需要任何 key。你可以把筛选出的文件一键交给自己常用的 AI。</p>
+<ol><li>在“动态”页筛选你关心的范围，比如“近 90 天 + 影像设备”。</li>
+<li>在“想让 AI 做什么”里选一个任务，比如“对医院设备科工程师有什么影响”。</li>
+<li>点“<b>复制给 AI</b>”，打开豆包、DeepSeek、Kimi 等聊天 App，粘贴、发送。手机上也可以点“分享到 App”直接发过去。</li>
+<li>想用 Excel 整理，点“下载 .csv”；想上传文件给 AI，点“下载 .md”。</li></ol>
+<p>导出的内容自带说明，要求 AI 只根据资料回答、标注编号、不编造。重要结论请点原文核对。</p>
+<p><b>给智能体</b>：完整数据公开在雷达网页的 <code>data.json</code>，可以让你的智能体直接读取。</p></div></details>
 
 <details><summary><span class="n">06</span>数据从哪来，多久更新</summary><div class="gbody">
 <ul><li><b>中国政府网·政策文件库</b>：每周一自动抓取。</li><li><b>国家药监局</b>：该网站不允许程序访问，由维护者在浏览器中正常保存页面后导入，不做任何绕过。</li></ul>
@@ -170,31 +165,14 @@
 
 <details><summary><span class="n">07</span>常见问题</summary><div class="gbody">
 <ul><li><b>打不开或一直转圈</b>：数据托管在 GitHub，部分网络下访问较慢。可以换手机流量试试；App 会先显示离线内容。</li>
-<li><b>AI 说“资料里没有”</b>：它只根据本站收录的文件回答，这是为了不编造。</li>
+<li><b>AI 回答不准</b>：导出的资料只包含标题、日期和摘要片段，深入问题请让 AI 结合原文链接，或交给能联网的智能体。</li>
 <li><b>分级不准</b>：分级由关键词规则生成，可能有误，一切以原文为准。</li>
 <li><b>声明</b>：本 App 由程序从公开渠道整理，非官方发布，不提供法律或合规意见。</li></ul></div></details>
 
 </section>
 
-<nav class="tabs" role="tablist"><button data-view="feed" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16M4 10h16M4 15h10M4 20h7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>动态</button><button data-view="radar" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12 12V3" stroke="currentColor" stroke-width="1.6"/><circle cx="16" cy="8" r="1.6" fill="currentColor"/></svg>雷达</button><button data-view="data" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V11M10 20V5M15 20v-7M20 20V8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>数据</button><button data-view="ai" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 10h8M8 13h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>问 AI</button><button data-view="guide" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M9.6 9.3a2.5 2.5 0 1 1 3.4 2.3c-.7.3-1 .8-1 1.5v.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="17" r="1" fill="currentColor"/></svg>指南</button></nav>
+<nav class="tabs" role="tablist"><button data-view="feed" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16M4 10h16M4 15h10M4 20h7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>动态</button><button data-view="radar" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12 12V3" stroke="currentColor" stroke-width="1.6"/><circle cx="16" cy="8" r="1.6" fill="currentColor"/></svg>雷达</button><button data-view="data" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V11M10 20V5M15 20v-7M20 20V8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>数据</button><button data-view="guide" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M9.6 9.3a2.5 2.5 0 1 1 3.4 2.3c-.7.3-1 .8-1 1.5v.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="17" r="1" fill="currentColor"/></svg>指南</button></nav>
 <div class="toast" id="toast" role="status"></div>
-<div class="modal" id="keymodal" role="dialog" aria-modal="true" aria-labelledby="km-t">
-  <div class="box">
-    <h3 id="km-t">先填一个你自己的 AI key</h3>
-    <p class="note" style="margin:0">问答功能用的是 DeepSeek 的大模型，按用量从你自己的账户扣费，单次问答的用量很小。三步搞定：</p>
-    <ol>
-      <li>打开 <a href="https://platform.deepseek.com" target="_blank" rel="noopener">platform.deepseek.com</a>，注册并登录。</li>
-      <li>左侧点“充值”，充一点点就够用很久（比如 10 元）。</li>
-      <li>左侧点“API keys” → “创建 API key”，起个名字，<b>复制</b>那串以 <code>sk-</code> 开头的字符，粘到下面。</li>
-    </ol>
-    <input id="keyinput" type="password" placeholder="sk-……" autocomplete="off" aria-label="API key">
-    <p class="note" id="key-err" style="color:var(--s-dev)"></p>
-    <div class="warn">你的 key <b>只保存在这个浏览器里</b>，直接发给 DeepSeek，不经过本站、不会上传到任何地方。在公用电脑上用完请点“清除 key”。建议在 DeepSeek 后台给 key 设一个消费上限。</div>
-    <div class="row"><button class="btn" id="key-cancel" type="button">以后再说</button><button class="btn primary" id="key-save" type="button">保存</button></div>
-  </div>
-</div>
-
-
 <script src="config.js"></script>
 <script src="data/snapshot.js"></script>
 <script src="app.js"></script>

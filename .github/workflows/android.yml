@@ -23,7 +23,7 @@ jobs:
           distribution: temurin
           java-version: "21"
       - name: Install Capacitor
-        run: npm install --no-save @capacitor/core@7 @capacitor/cli@7 @capacitor/android@7 @capacitor/assets@3
+        run: npm install --no-save @capacitor/core@7 @capacitor/cli@7 @capacitor/android@7 @capacitor/assets@3 @capacitor/share@7 @capacitor/filesystem@7
       - name: Create Android project
         run: npx cap add android
       - name: App icon
