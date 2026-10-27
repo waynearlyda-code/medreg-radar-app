@@ -1,0 +1,10 @@
+{
+  "name": "medreg-radar-app",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MedReg Radar App：医疗器械法规雷达的手机 / 电脑应用（PWA + 安卓安装包）",
+  "license": "MIT",
+  "scripts": {
+    "serve": "python3 -m http.server 8080 -d www"
+  }
+}

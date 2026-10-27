@@ -1,0 +1,27 @@
+name: pages
+
+# 把 www/ 发布为 GitHub Pages，这就是 PWA 的地址（手机浏览器打开后可“添加到主屏幕”）。
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.d.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: www
+      - id: d
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,6 @@
+{
+  "appId": "io.github.medregradar.app",
+  "appName": "法规雷达",
+  "webDir": "www",
+  "server": { "androidScheme": "https" }
+}

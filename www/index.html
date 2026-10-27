@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>法规雷达 · MedReg Radar</title>
+<meta name="description" content="医疗器械（以医学影像设备为主）法规与政策动态 App：分级、图表、AI 解读与问答。">
+<meta name="theme-color" content="#0e1110">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="法规雷达">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header class="ab">
+  <a class="brand" href="#/feed"><img src="icons/icon-192.png" width="26" height="26" alt="" style="border-radius:6px"><b>MedReg <span>Radar</span></b></a>
+  <span class="upd" id="upd"></span>
+  <button class="iconbtn" id="refresh" title="检查更新" aria-label="检查更新">↻</button>
+  <button class="iconbtn" id="theme" title="切换亮色 / 暗色" aria-label="切换亮色或暗色">◐</button>
+</header>
+
+<section class="view" id="v-feed">
+  <h2>动态</h2><p class="sub">医疗器械法规与政策 · 以医学影像设备为主 · 每条附原文链接</p>
+  <div class="stats" style="margin-bottom:14px">
+    <div class="stat"><div class="k"><i style="background:var(--s-img)"></i>影像设备</div><div class="v" id="st0">0</div><div class="d">近 30 天</div></div>
+    <div class="stat"><div class="k"><i style="background:var(--s-dev)"></i>医疗器械</div><div class="v" id="st1">0</div><div class="d">近 30 天</div></div>
+    <div class="stat"><div class="k"><i style="background:var(--s-bg)"></i>背景</div><div class="v" id="st2">0</div><div class="d">近 30 天</div></div>
+  </div>
+  <div class="filters">
+      <div class="seg" id="f-range" role="group" aria-label="时间范围">
+        <button data-v="30" aria-pressed="true">近 30 天</button><button data-v="90" aria-pressed="false">近 90 天</button><button data-v="all" aria-pressed="false">全部</button>
+      </div>
+      <div class="seg" id="f-lv" role="group" aria-label="分级">
+        <button data-v="全部" aria-pressed="true">全部</button>
+        <button data-v="影像设备" aria-pressed="false"><i style="background:var(--s-img)"></i>影像设备</button>
+        <button data-v="医疗器械" aria-pressed="false"><i style="background:var(--s-dev)"></i>医疗器械</button>
+        <button data-v="背景" aria-pressed="false"><i style="background:var(--s-bg)"></i>背景</button>
+      </div>
+      <input class="search" id="f-q" type="search" placeholder="搜索标题、摘要、文号" aria-label="搜索">
+      <span class="count" id="count"></span>
+    </div>
+    <div class="feed" id="feed"></div>
+  <div class="more"><button class="btn" id="more" hidden>显示更多</button></div>
+</section>
+
+<section class="view" id="v-radar">
+  <h2>雷达</h2><p class="sub">每个点是一份新文件，越靠近中心越和影像设备相关。点一下打开原文。</p>
+  <div class="radar-wrap">
+    <div class="radar" aria-label="雷达图"><svg viewBox="0 0 400 400">
+        <defs>
+          <linearGradient id="sw" gradientUnits="userSpaceOnUse" x1="84" y1="62" x2="200" y2="20">
+            <stop offset="0" stop-color="var(--accent)" stop-opacity="0"/>
+            <stop offset="1" stop-color="var(--accent)" stop-opacity=".28"/>
+          </linearGradient>
+        </defs>
+        <circle class="ring" cx="200" cy="200" r="180"/>
+        <circle class="ring" cx="200" cy="200" r="120"/>
+        <circle class="ring" cx="200" cy="200" r="60"/>
+        <line class="axis" x1="20" y1="200" x2="380" y2="200"/>
+        <line class="axis" x1="200" y1="20" x2="200" y2="380"/>
+        <text class="rlabel" x="206" y="146">影像设备</text>
+        <text class="rlabel" x="206" y="86">医疗器械</text>
+        <text class="rlabel" x="206" y="30">背景</text>
+        <g class="sweep">
+          <path d="M200,200 L84.3,62.1 A180,180 0 0 1 200,20 Z" fill="url(#sw)"/>
+          <line x1="200" y1="200" x2="200" y2="20" stroke="var(--accent)" stroke-width="1.5" opacity=".8"/>
+        </g>
+        <g id="blips"></g>
+        <circle cx="200" cy="200" r="3" fill="var(--ink)"/>
+      </svg>
+      <div class="corner tl">SCAN · <span id="radar-window">近 30 天</span></div>
+    </div>
+    <div class="legend" style="flex-direction:column;gap:10px;font-size:14px">
+      <span><i style="background:var(--s-img)"></i>内圈 · 影像设备：CT、MR、DR、DSA、超声、核医学、放疗等</span>
+      <span><i style="background:var(--s-dev)"></i>中圈 · 医疗器械：注册、监督抽检、标准、召回等</span>
+      <span><i style="background:var(--s-bg)"></i>外圈 · 背景：提到医疗器械的宏观政策</span>
+    </div>
+  </div>
+</section>
+
+<section class="view" id="v-data">
+  <h2>数据</h2><p class="sub">悬停或点按柱子看数值，点“表格”看全部数字</p>
+  <div class="charts">
+      <div class="chart wide">
+        <header><div><h3>历年政策文件数</h3><p class="desc">中国政府网政策文件库中，含所选关键词的文件数（按发布年份）</p></div>
+          <div class="tools"><select id="trend-q" aria-label="关键词"></select><button class="btn" data-table="trend" aria-pressed="false">表格</button></div></header>
+        <div class="legend"><span><i style="background:var(--s-img)"></i>全年</span><span><i class="hatch"></i>今年（截至今天，未满一年）</span></div>
+        <div class="plot" id="c-trend"></div>
+      </div>
+      <div class="chart">
+        <header><div><h3>药监局每月批准注册的医疗器械产品</h3><p class="desc">来自“批准注册 N 个医疗器械产品”的月度公告</p></div>
+          <div class="tools"><button class="btn" data-table="reg" aria-pressed="false">表格</button></div></header>
+        <div class="plot" id="c-reg"></div>
+        <p class="note" id="reg-note"></p>
+      </div>
+      <div class="chart">
+        <header><div><h3>主题分布</h3><p class="desc">收录文件按主题标签计数（一份文件可有多个标签）</p></div>
+          <div class="tools"><button class="btn" data-table="tags" aria-pressed="false">表格</button></div></header>
+        <div class="plot" id="c-tags"></div>
+      </div>
+      <div class="chart wide">
+        <header><div><h3>近 12 个月收录文件</h3><p class="desc">按分级堆叠</p></div>
+          <div class="tools"><button class="btn" data-table="month" aria-pressed="false">表格</button></div></header>
+        <div class="legend"><span><i style="background:var(--s-img)"></i>影像设备</span><span><i style="background:var(--s-dev)"></i>医疗器械</span><span><i style="background:var(--s-bg)"></i>背景</span></div>
+        <div class="plot" id="c-month"></div>
+      </div>
+    </div>
+  <h3 style="margin:26px 0 8px;font-size:15px">周报 · 月报</h3>
+  <div class="arch-h">周报 · WEEKLY</div><div class="arch" id="arch-weekly"></div>
+  <div class="arch-h">月报 · MONTHLY</div><div class="arch" id="arch-monthly"></div>
+</section>
+
+<section class="view" id="v-ai">
+  <h2>问 AI</h2><p class="sub">只根据收录的文件回答，并标出出处。第一次使用需要填你自己的 key（见“指南”第 05 条）。</p>
+  <aside class="drawer" id="drawer" aria-hidden="true" aria-label="AI 问答">
+  <div class="dh"><b>问 AI</b><span class="tag">{{AI_PROVIDER}}</span><span class="sp"></span><button class="iconbtn" id="close-ai" aria-label="关闭">✕</button></div>
+  <div class="body">
+    <p class="note" style="margin-top:0">AI 只根据本站收录的文件回答，并标出出处编号。资料里没有的，它会说没有。</p>
+    <div class="presets" id="presets">
+      <button>整理本月和影像设备相关的文件</button>
+      <button>最近有哪些注册审评方面的新规定？</button>
+      <button>最近的文件对医院设备科工程师有什么影响？</button>
+      <button>医用设备集中采购最近有什么新要求？</button>
+    </div>
+    <div id="chat"></div>
+  </div>
+  <form id="askform"><textarea id="ask" placeholder="输入问题，回车发送（Shift+回车换行）" aria-label="问题"></textarea><button class="btn primary" id="send" type="submit">发送</button></form>
+  <div class="keybar"><span id="keystate"></span><span class="sp" style="flex:1"></span><button id="key-change" type="button">换一个</button><button id="key-clear" type="button">清除 key</button></div>
+</aside>
+</section>
+
+<section class="view guide" id="v-guide">
+  <h2>指南</h2><p class="sub">安装、使用、数据来源，一页看懂</p>
+  
+<details open><summary><span class="n">01</span>这个 App 是做什么的</summary><div class="gbody">
+<p>医疗器械的法规和政策更新得快，文件分散在政府网、药监局等多个网站上。MedReg Radar 把它们收拢到一处，按 <b>影像设备 / 医疗器械 / 背景</b> 分级，配上 AI 解读和问答。每条都附官方原文链接。</p>
+<ul><li><b>动态</b>：最新文件列表，可按时间、分级、关键词筛选。</li><li><b>雷达</b>：每个点是一份新文件，越靠中心越和影像设备相关。</li>
+<li><b>数据</b>：历年趋势、每月注册数等图表，每张都能切换成表格。</li><li><b>问 AI</b>：针对收录的文件提问，回答标注出处。</li></ul></div></details>
+
+<details><summary><span class="n">02</span>装到手机桌面</summary><div class="gbody">
+<p><b>iPhone / iPad</b>（要用 Safari 打开）</p>
+<ol><li>用 Safari 打开本页。</li><li>点底部中间的“分享”按钮（方框加向上的箭头）。</li><li>往下滑，点“添加到主屏幕”，再点“添加”。</li></ol>
+<p><b>安卓手机</b></p>
+<ol><li>用 Chrome 或系统浏览器打开本页。</li><li>点右上角“⋮”菜单，选“安装应用”或“添加到主屏幕”。</li><li>也可以直接安装安卓安装包（.apk），见下一条。</li></ol>
+<button class="btn primary install-btn" hidden>一键安装到本机</button></div></details>
+
+<details><summary><span class="n">03</span>安卓安装包（.apk）</summary><div class="gbody">
+<ol><li>在项目的 GitHub 页面点 <b>Releases</b>，下载最新的 <code>.apk</code> 文件。</li>
+<li>打开下载好的文件。系统提示“禁止安装未知来源应用”时，点“设置”，允许这个浏览器或文件管理器安装，再返回点“安装”。</li>
+<li>小米 / 红米手机可能提示“安全守护”或要求扫描，选择“继续安装”。</li></ol>
+<p>安装包和网页版内容完全相同，数据都来自同一个地方，打开时自动更新。</p></div></details>
+
+<details><summary><span class="n">04</span>装到电脑</summary><div class="gbody">
+<ol><li>用 Chrome 或 Edge 打开本页。</li><li>地址栏最右边有一个“安装”小图标（电脑加向下箭头），点它，再点“安装”。</li><li>之后可以像普通软件一样从桌面或启动台打开。</li></ol>
+<button class="btn primary install-btn" hidden>一键安装到本机</button></div></details>
+
+<details><summary><span class="n">05</span>使用“问 AI”：申请自己的 key</summary><div class="gbody">
+<p>问答用的是 DeepSeek 大模型，按用量从你自己的账户扣费，单次问答用量很小。</p>
+<ol><li>打开 <a href="https://platform.deepseek.com" target="_blank" rel="noopener">platform.deepseek.com</a>，注册并登录。</li>
+<li>左侧点“充值”，少量充值即可。</li><li>左侧点“API keys” → “创建 API key”，复制以 <code>sk-</code> 开头的那串字符。</li>
+<li>回到 App，点“问 AI”，粘贴并保存。</li></ol>
+<p><b>安全说明</b>：key 只保存在你这台设备上，直接发给 DeepSeek，不经过任何其他服务器。换手机或清除浏览器数据后需要重新填写。建议在 DeepSeek 后台设置消费上限；在公用设备上用完点“清除 key”。</p></div></details>
+
+<details><summary><span class="n">06</span>数据从哪来，多久更新</summary><div class="gbody">
+<ul><li><b>中国政府网·政策文件库</b>：每周一自动抓取。</li><li><b>国家药监局</b>：该网站不允许程序访问，由维护者在浏览器中正常保存页面后导入，不做任何绕过。</li></ul>
+<p>所有设备读取同一份数据：打开 App 时自动检查更新，有新数据会在底部提示。没有网络时显示上次的内容，顶部会标“离线缓存”。</p></div></details>
+
+<details><summary><span class="n">07</span>常见问题</summary><div class="gbody">
+<ul><li><b>打不开或一直转圈</b>：数据托管在 GitHub，部分网络下访问较慢。可以换手机流量试试；App 会先显示离线内容。</li>
+<li><b>AI 说“资料里没有”</b>：它只根据本站收录的文件回答，这是为了不编造。</li>
+<li><b>分级不准</b>：分级由关键词规则生成，可能有误，一切以原文为准。</li>
+<li><b>声明</b>：本 App 由程序从公开渠道整理，非官方发布，不提供法律或合规意见。</li></ul></div></details>
+
+</section>
+
+<nav class="tabs" role="tablist"><button data-view="feed" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16M4 10h16M4 15h10M4 20h7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>动态</button><button data-view="radar" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12 12V3" stroke="currentColor" stroke-width="1.6"/><circle cx="16" cy="8" r="1.6" fill="currentColor"/></svg>雷达</button><button data-view="data" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V11M10 20V5M15 20v-7M20 20V8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>数据</button><button data-view="ai" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 10h8M8 13h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>问 AI</button><button data-view="guide" aria-selected="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M9.6 9.3a2.5 2.5 0 1 1 3.4 2.3c-.7.3-1 .8-1 1.5v.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="17" r="1" fill="currentColor"/></svg>指南</button></nav>
+<div class="toast" id="toast" role="status"></div>
+<div class="modal" id="keymodal" role="dialog" aria-modal="true" aria-labelledby="km-t">
+  <div class="box">
+    <h3 id="km-t">先填一个你自己的 AI key</h3>
+    <p class="note" style="margin:0">问答功能用的是 DeepSeek 的大模型，按用量从你自己的账户扣费，单次问答的用量很小。三步搞定：</p>
+    <ol>
+      <li>打开 <a href="https://platform.deepseek.com" target="_blank" rel="noopener">platform.deepseek.com</a>，注册并登录。</li>
+      <li>左侧点“充值”，充一点点就够用很久（比如 10 元）。</li>
+      <li>左侧点“API keys” → “创建 API key”，起个名字，<b>复制</b>那串以 <code>sk-</code> 开头的字符，粘到下面。</li>
+    </ol>
+    <input id="keyinput" type="password" placeholder="sk-……" autocomplete="off" aria-label="API key">
+    <p class="note" id="key-err" style="color:var(--s-dev)"></p>
+    <div class="warn">你的 key <b>只保存在这个浏览器里</b>，直接发给 DeepSeek，不经过本站、不会上传到任何地方。在公用电脑上用完请点“清除 key”。建议在 DeepSeek 后台给 key 设一个消费上限。</div>
+    <div class="row"><button class="btn" id="key-cancel" type="button">以后再说</button><button class="btn primary" id="key-save" type="button">保存</button></div>
+  </div>
+</div>
+
+
+<script src="config.js"></script>
+<script src="data/snapshot.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

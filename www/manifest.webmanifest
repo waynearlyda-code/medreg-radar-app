@@ -1,0 +1,17 @@
+{
+  "name": "MedReg Radar 医械法规雷达",
+  "short_name": "法规雷达",
+  "description": "医疗器械（以医学影像设备为主）法规与政策动态：分级、图表、AI 解读与问答。",
+  "lang": "zh-CN",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0e1110",
+  "theme_color": "#0e1110",
+  "icons": [
+    {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png"},
+    {"src": "icons/maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable"},
+    {"src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}
